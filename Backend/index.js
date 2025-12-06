@@ -41,24 +41,41 @@ app.use(express.json());
 //     optionsSuccessStatus: 204,
 //     credentials: true,
 // };
-const allowedOrigins = [
-    "http://localhost:5173",
-    "http://localhost:4000",
-    "https://task-tracker-application-assignment.vercel.app",
-];
+// CORS Configuration - supports both development and production
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',').map(url => url.trim().replace(/\/$/, ''))
+    : [
+        "http://localhost:5173",
+        "http://localhost:4000",
+        "http://localhost:3000"
+    ];
 
 const corsOptions = {
-    origin :(origin,callback) =>{
-        if(allowedOrigins.includes(origin)|| !origin){
-            callback(null,true);
-        }else{
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        
+        // Remove trailing slash for comparison (browsers don't send trailing slashes)
+        const originWithoutSlash = origin.replace(/\/$/, '');
+        
+        // Check if origin is in allowed list
+        const isAllowed = allowedOrigins.some(allowed => {
+            const allowedWithoutSlash = allowed.replace(/\/$/, '');
+            return originWithoutSlash === allowedWithoutSlash || origin === allowed;
+        });
+        
+        if (isAllowed || process.env.NODE_ENV === 'development') {
+            callback(null, true);
+        } else {
+            console.error(`CORS blocked origin: ${origin}. Allowed:`, allowedOrigins);
             callback(new Error("Not allowed by CORS"));
         }
     },
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    optionsSuccessStatus :204,
-    credentials: true,
-}
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    optionsSuccessStatus: 204,
+    credentials: true, // Required for cookies
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
 app.use(cors(corsOptions));
 
 app.use('/api/auth', authRoutes);

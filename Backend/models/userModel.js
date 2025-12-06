@@ -19,12 +19,9 @@ const userSchema = new mongoose.Schema({
     },
     verified:{
         type:Boolean,
-        default:false,
+        default:true, // Auto-verify users (no email verification)
     },
-    verificationLinkSent:{
-        type:Boolean,
-        default:false
-    },
+    // verificationLinkSent field removed - no longer needed
     // avatarLink : {
     //     type:String
     // },

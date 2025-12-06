@@ -19,13 +19,17 @@ const Dashboard = () => {
      const { isAuthenticated, checkAuth } = useAuth();
            const navigate = useNavigate();
   
+    // First, check authentication status on mount
     useEffect(() => {
-          
-            // checkAuth();
-            if (!isAuthenticated) {
-                navigate("/login");
-            }
-        }, [])
+        checkAuth();
+    }, []);
+
+    // Then, redirect if not authenticated (after auth check completes)
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate("/login", { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
 
         // Sync filters and sorting with the URL
          useEffect(() => {

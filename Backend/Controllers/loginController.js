@@ -26,19 +26,22 @@ async function loginController(req,res){
             return res.status(401).send({message:"Invalid Password"});
         }
 
-        //Check if the user's email is verified
-        if(!user.verified){
-            return res.status(400).send({message:"User doesn't exist"});
-        }
+        // No email verification required - users can login immediately after registration
 
         const token = setUser(user);
-        res.status(200).cookie("authToken",token,{
-            // httpOnly:false,
-            httpOnly:true, //for production
-            secure:true,
-            sameSite:"none",
-            expires:new Date(Date.now() + 7*24*60*60*1000),
-        }).send({
+        
+        // Cookie settings for cross-origin (Vercel frontend → Render backend)
+        const cookieOptions = {
+            // httpOnly: true, // Prevents XSS attacks - JavaScript cannot access this cookie
+            httpOnly:false,
+            secure: true,   // Required for HTTPS and sameSite: "none"
+            sameSite: "none", // Required for cross-origin cookies (different domains)
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+            path: "/",      // Available for all paths on the domain
+            // Don't set domain - let browser handle it for cross-origin
+        };
+        
+        res.status(200).cookie("authToken", token, cookieOptions).send({
             message:"Login successful",
             status:200,
             user: {

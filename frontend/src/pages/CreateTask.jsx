@@ -12,13 +12,17 @@ const CreateTask = () => {
   const navigate = useNavigate();
      const { isAuthenticated, checkAuth } = useAuth();
   
+    // First, check authentication status on mount
     useEffect(() => {
-          
-            // checkAuth();
-            if (!isAuthenticated) {
-                navigate("/login");
-            }
-        }, [])
+        checkAuth();
+    }, []);
+
+    // Then, redirect if not authenticated (after auth check completes)
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate("/login", { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
   
   //submitting new task data
   const handleSubmit = async (data) => {

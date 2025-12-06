@@ -1,9 +1,7 @@
 const bcrypt = require("bcrypt")
 const {User} = require("../models/userModel.js");
 const {validateRegister} = require("../Validation/auth.js");
-const {Token} = require("../models/tokenModel.js")
-const sendEmail  = require("../utils/sendEmail.js")
-const crypto  = require("crypto")
+const {setUser} = require("../service/auth.js");
 
 async function registerController(req,res){
     const {firstName,lastName,email,password} = req.body;
@@ -16,45 +14,50 @@ async function registerController(req,res){
         }
 
         //Check if user with the given email already exists
-        let user = await User.findOne({email});
+        const existingUser = await User.findOne({email});
 
-        if(user && user.verified){
+        if(existingUser){
             return res.status(409).send({message:"User with given email already exists"});
-        }
-        
-        if(user && user.verificationLinkSent){
-            return res.status(400).send({message:"A verification link has already sent to this email"});
         }
 
         const salt = await bcrypt.genSalt(Number(process.env.SALT));
         const hashPassword = await bcrypt.hash(password,salt);
 
-        ///save the user with hashed password
-        user = await new User({
-            ...req.body,password:hashPassword
+        // Save the user with hashed password
+        // Set verified to true by default (no email verification needed)
+        const user = await new User({
+            firstName,
+            lastName,
+            email,
+            password: hashPassword,
+            verified: true, // Auto-verify users
         }).save();
 
-        //Generate a verification token and send an email
-        const token = await new Token({
-            userId: user._id,
-            token : crypto.randomBytes(16).toString("hex"),
-            createdAt:Date.now(),
-            expiresAt:Date.now()+3600000,
-        }).save();
+        // Generate JWT token and set cookie for auto-login
+        const token = setUser(user);
+        
+        // Cookie settings for cross-origin (Vercel frontend → Render backend)
+        const cookieOptions = {
+            httpOnly: false, // Set to false as per your current config
+            secure: true,   // Required for HTTPS and sameSite: "none"
+            sameSite: "none", // Required for cross-origin cookies
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+            path: "/",      // Available for all paths
+        };
 
-        const url = `${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`;
-        await sendEmail(user.email,"Verify Email",url);
-
-        user.verificationLinkSent = true;
-        await user.save();
-        res.status(201).send({message:`Verification email sent to ${user.email}`});        
+        res.status(201).cookie("authToken", token, cookieOptions).send({
+            message: "Registration successful",
+            user: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email
+            }
+        });        
 
     }catch(error){
         console.error("Error in registerController:",error);
         res.status(500).send({message:"Internal Server Error"});
     }
-
-
 };
 
 module.exports = registerController;

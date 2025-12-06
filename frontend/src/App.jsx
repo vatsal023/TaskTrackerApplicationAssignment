@@ -10,18 +10,18 @@ import Login from './pages/Login.jsx';
 import CreateTask from './pages/CreateTask.jsx';
 import EditTask from './pages/EditTask.jsx';
 import Dashboard from './pages/Dashboard.jsx';
-import VerifyEmail from './pages/verifyEmail.jsx';
 import Navbar from './components/Navbar.jsx';
 import DashboardStats from './pages/DashboardStats.jsx';
 import Home from './pages/Home.jsx';
 
 const Layout = () => {
-  const { isAuthenticated, checkAuth } = useAuth();
+  const { checkAuth } = useAuth();
 
   useEffect(() => {
+    // Check auth only once on mount, not when isAuthenticated changes
+    // This prevents infinite loops
     checkAuth();
-    console.log("Layout effect")
-  }, [isAuthenticated]);
+  }, []); // Empty dependency array = run only on mount
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -62,10 +62,6 @@ const router = createBrowserRouter([
       {
         path: "create",
         element: <CreateTask />,
-      },
-      {
-        path: "users/:id/verify/:token",
-        element: <VerifyEmail />, 
       },
       {
         path: "edit/:id",

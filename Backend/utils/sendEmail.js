@@ -1,31 +1,31 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-async function sendEmail(email,subject,text){
-    try{
-        const transporter = nodemailer.createTransport({
-            host:process.env.HOST,
-            service:process.env.SERVICE,
-            port:587,
-            //secure : Boolean(process.env.SECURE),
-            auth:{
-                user:process.env.SMTP_USER,
-                pass:process.env.SMTP_PASS,
-            },
+// Initialize Resend with API key from environment variable
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+async function sendEmail(email, subject, text) {
+    try {
+        // Get the sender email from environment variable
+        const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+        
+        const { data, error } = await resend.emails.send({
+            from: fromEmail,
+            to: [email], // Resend expects an array
+            subject: subject,
+            html: `<p>${text}</p>`, // Resend prefers HTML, but we'll convert text to HTML
         });
 
-        await transporter.sendMail({
-            from: process.env.SMTP_USER,
-            to:email,
-            subject: subject,
-            text:text,
-        })
-        
-        console.log(`Email sent to ${email}`);
-    }catch(error){
-        console.error(error);
-        console.error(`Error sending mail to ${email}`);
+        if (error) {
+            console.error("Resend API error:", error);
+            throw error;
+        }
+
+        console.log(`Email sent successfully to ${email}. Email ID: ${data?.id}`);
+        return data;
+    } catch (error) {
+        console.error(`Error sending email to ${email}:`, error);
         throw error;
     }
 }
 
-module.exports = sendEmail
+module.exports = sendEmail;

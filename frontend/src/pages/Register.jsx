@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/authContext";
 
 const Register = () => {
     const [data, setData] = useState({
@@ -11,16 +12,29 @@ const Register = () => {
         password: "",
     });
     const navigate = useNavigate();
+    const { setAuthenticated } = useAuth();
+    
     const handleChange = (e) => {
         setData({ ...data, [e.target.name]: e.target.value });
     };
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const url = "/api/auth/register";
-            const { data: res } = await axios.post(url, data);
+            const { data: res } = await axios.post(url, data, {
+                withCredentials: true,
+            });
             toast.success(res.message);
-            navigate("/login");
+            
+            // Auto-login after registration
+            if (res.user) {
+                localStorage.setItem("user", JSON.stringify(res.user));
+                setAuthenticated(true, res.user);
+                navigate("/dashboard");
+            } else {
+                navigate("/login");
+            }
         } catch (error) {
             if (
                 error.response &&
