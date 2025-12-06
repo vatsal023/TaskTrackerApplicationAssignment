@@ -44,8 +44,8 @@ app.use(express.json());
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:4000",
-    "https://task-tracker-application-assignment.vercel.app/",
-    
+    "https://task-tracker-application-assignment.vercel.app",
+
 ];
 
 const corsOptions = {
