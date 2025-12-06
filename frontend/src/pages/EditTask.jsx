@@ -1,13 +1,11 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-// import { AuthContext } from "../context/AuthContext";
-// import { getTask, updateTask } from "../services/api";
 import TaskForm from "../components/TaskForm";
 import axios from "axios";
 import { useAuth } from "../context/authContext";
 
 const EditTask = () => {
-//   const { token } = useContext(AuthContext);
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
@@ -22,13 +20,16 @@ const EditTask = () => {
         }, [])
 
   useEffect(() => {
+
+    //fetching task data
     const fetchTask = async () => {
       const res = await axios.get(`/api/tasks/${id}`);
       setTask(res.data);
     };
     fetchTask();
   }, [id]);
-
+   
+  //submitting updated task data
   const handleSubmit = async (data) => {
     await axios.put(`/api/tasks/${id}`,data);
     navigate("/");

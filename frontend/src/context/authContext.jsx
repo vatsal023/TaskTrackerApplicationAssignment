@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  // On mount, read user info from localStorage for persistence
+  //on mount,read user info from localStorage for persistence
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const token = Cookies.get("authToken");

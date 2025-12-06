@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom"; // Make sure to import useParams if you're using React Router
+import { Link, useParams } from "react-router-dom"; 
 import { toast } from "react-hot-toast";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
@@ -21,9 +21,7 @@ const VerifyEmail = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // throw { response: { data: { message: "Mock: Invalid or expired token" } } };
-      //   await new Promise((res) => setTimeout(res, 1000)); // simulate delay
-      // const response = { data: { message: "Email verified successfully!" } };
+       
         const response = await axios.get(`/api/auth/${id}/verify/${token}`);
 
         toast.success(response.data.message);
@@ -38,8 +36,7 @@ const VerifyEmail = () => {
     };
 
     fetchData();
-    // const p = fetchData();
-    // console.log(p);
+    
   }, [id, token]);
   return (
     <div className="bg-dark min-h-screen  flex justify-center items-center flex-col">

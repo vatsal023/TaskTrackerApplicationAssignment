@@ -19,7 +19,8 @@ const CreateTask = () => {
                 navigate("/login");
             }
         }, [])
-
+  
+  //submitting new task data
   const handleSubmit = async (data) => {
     await axios.post("/api/tasks",data);
     navigate("/");
