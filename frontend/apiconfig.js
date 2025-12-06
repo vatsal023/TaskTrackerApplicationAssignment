@@ -10,7 +10,7 @@ let baseUrl;
 // }
 
 if(import.meta.env.VITE_NODE_ENV === 'production'){
-      baseUrl = "https://tasktrackerapplicationassignment.onrender.com/";
+      baseUrl = "https://tasktrackerapplicationassignment.onrender.com";
 }
 else{
     // Development
