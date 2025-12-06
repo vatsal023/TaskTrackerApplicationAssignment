@@ -32,7 +32,7 @@ const EditTask = () => {
   //submitting updated task data
   const handleSubmit = async (data) => {
     await axios.put(`/api/tasks/${id}`,data);
-    navigate("/");
+    navigate("/dashboard");
   };
 
   return (
