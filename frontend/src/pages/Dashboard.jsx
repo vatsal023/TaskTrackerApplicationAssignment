@@ -63,7 +63,7 @@ const Dashboard = () => {
       const res = await axios.get("/api/tasks",{
         params: {
         ...filters,sort}
-      }); 
+      },{ withCredentials: true }); 
       console.log(res.data);
       setTasks(res.data);
     } catch {
@@ -80,7 +80,7 @@ const Dashboard = () => {
   //deleting a task
   const handleDelete = async (id) => {
     if (window.confirm("Delete this task?")) {
-      await axios.delete(`/api/tasks/${id}`);
+      await axios.delete(`/api/tasks/${id}`,{ withCredentials: true });
       fetchTasks();
     }
   };

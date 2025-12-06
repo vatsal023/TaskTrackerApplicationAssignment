@@ -26,7 +26,7 @@ const CreateTask = () => {
   
   //submitting new task data
   const handleSubmit = async (data) => {
-    await axios.post("/api/tasks",data);
+    await axios.post("/api/tasks",data,{ withCredentials: true });
     navigate("/dashboard");
   };
 

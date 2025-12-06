@@ -27,7 +27,7 @@ const EditTask = () => {
 
     //fetching task data
     const fetchTask = async () => {
-      const res = await axios.get(`/api/tasks/${id}`);
+      const res = await axios.get(`/api/tasks/${id}`,{ withCredentials: true });
       setTask(res.data);
     };
     fetchTask();
@@ -35,7 +35,7 @@ const EditTask = () => {
    
   //submitting updated task data
   const handleSubmit = async (data) => {
-    await axios.put(`/api/tasks/${id}`,data);
+    await axios.put(`/api/tasks/${id}`,data,{ withCredentials: true });
     navigate("/dashboard");
   };
 
