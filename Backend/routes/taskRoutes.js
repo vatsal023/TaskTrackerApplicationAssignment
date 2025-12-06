@@ -3,7 +3,7 @@ const router = express.Router();
 const protect = require('../middleware/protect');
 const {
  getTasks, createTask, getTask, updateTask, deleteTask,getTaskStats
-} = require('../controllers/taskController');
+} = require('../Controllers/taskController');
 
 router.use(protect);
 
