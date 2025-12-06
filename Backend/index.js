@@ -51,43 +51,53 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
         "https://task-tracker-application-assignment.vercel.app",
         "https://tasktrackerapplicationassignment-frontend.onrender.com",
     ];
-
-const corsOptions = {
-    origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps, Postman, or curl requests)
-        if (!origin) {
-            return callback(null, true);
-        }
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || origin.includes('localhost')) {
+      callback(null, true);
+    } else {
+      console.error("Blocked origin:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // required for cookies
+}));
+// const corsOptions = {
+//     origin: (origin, callback) => {
+//         // Allow requests with no origin (like mobile apps, Postman, or curl requests)
+//         if (!origin) {
+//             return callback(null, true);
+//         }
         
-        // Remove trailing slash for comparison (browsers don't send trailing slashes in Origin header)
-        const originWithoutSlash = origin.replace(/\/$/, '');
+//         // Remove trailing slash for comparison (browsers don't send trailing slashes in Origin header)
+//         const originWithoutSlash = origin.replace(/\/$/, '');
         
-        // Check if origin is in allowed list (compare both with and without trailing slash)
-        const isAllowed = allowedOrigins.some(allowed => {
-            const allowedWithoutSlash = allowed.replace(/\/$/, '');
-            return originWithoutSlash === allowedWithoutSlash || origin === allowed;
-        });
+//         // Check if origin is in allowed list (compare both with and without trailing slash)
+//         const isAllowed = allowedOrigins.some(allowed => {
+//             const allowedWithoutSlash = allowed.replace(/\/$/, '');
+//             return originWithoutSlash === allowedWithoutSlash || origin === allowed;
+//         });
         
-        // In development, allow all localhost origins
-        if (process.env.NODE_ENV === 'development' && origin.includes('localhost')) {
-            return callback(null, true);
-        }
+//         // In development, allow all localhost origins
+//         if (process.env.NODE_ENV === 'development' && origin.includes('localhost')) {
+//             return callback(null, true);
+//         }
         
-        if (isAllowed) {
-            callback(null, true);
-        } else {
-            console.error(`❌ CORS blocked origin: ${origin}`);
-            console.error(`✅ Allowed origins:`, allowedOrigins);
-            callback(new Error(`Not allowed by CORS. Origin: ${origin}`));
-        }
-    },
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-    optionsSuccessStatus: 204,
-    credentials: true, // CRITICAL: Required for cookies to be sent/received
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposedHeaders: ['Set-Cookie'], // Expose Set-Cookie header
-};
-app.use(cors(corsOptions));
+//         if (isAllowed) {
+//             callback(null, true);
+//         } else {
+//             console.error(`❌ CORS blocked origin: ${origin}`);
+//             console.error(`✅ Allowed origins:`, allowedOrigins);
+//             callback(new Error(`Not allowed by CORS. Origin: ${origin}`));
+//         }
+//     },
+//     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+//     optionsSuccessStatus: 204,
+//     credentials: true, // CRITICAL: Required for cookies to be sent/received
+//     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+//     exposedHeaders: ['Set-Cookie'], // Expose Set-Cookie header
+// };
+// app.use(cors(corsOptions));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
