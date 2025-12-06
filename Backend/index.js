@@ -47,34 +47,43 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
     : [
         "http://localhost:5173",
         "http://localhost:4000",
-        "https://task-tracker-application-assignment.vercel.app",
+        "http://localhost:3000",
     ];
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
+        // Allow requests with no origin (like mobile apps, Postman, or curl requests)
+        if (!origin) {
+            return callback(null, true);
+        }
         
-        // Remove trailing slash for comparison (browsers don't send trailing slashes)
+        // Remove trailing slash for comparison (browsers don't send trailing slashes in Origin header)
         const originWithoutSlash = origin.replace(/\/$/, '');
         
-        // Check if origin is in allowed list
+        // Check if origin is in allowed list (compare both with and without trailing slash)
         const isAllowed = allowedOrigins.some(allowed => {
             const allowedWithoutSlash = allowed.replace(/\/$/, '');
             return originWithoutSlash === allowedWithoutSlash || origin === allowed;
         });
         
-        if (isAllowed || process.env.NODE_ENV === 'development') {
+        // In development, allow all localhost origins
+        if (process.env.NODE_ENV === 'development' && origin.includes('localhost')) {
+            return callback(null, true);
+        }
+        
+        if (isAllowed) {
             callback(null, true);
         } else {
-            console.error(`CORS blocked origin: ${origin}. Allowed:`, allowedOrigins);
-            callback(new Error("Not allowed by CORS"));
+            console.error(`❌ CORS blocked origin: ${origin}`);
+            console.error(`✅ Allowed origins:`, allowedOrigins);
+            callback(new Error(`Not allowed by CORS. Origin: ${origin}`));
         }
     },
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
     optionsSuccessStatus: 204,
-    credentials: true, // Required for cookies
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // CRITICAL: Required for cookies to be sent/received
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Set-Cookie'], // Expose Set-Cookie header
 };
 app.use(cors(corsOptions));
 

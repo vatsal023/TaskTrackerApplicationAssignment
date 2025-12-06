@@ -9,19 +9,19 @@ const EditTask = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [task, setTask] = useState(null);
-  const { isAuthenticated, checkAuth } = useAuth();
+  const { isAuthenticated, checkAuth, authChecked } = useAuth();
          
     // First, check authentication status on mount
     useEffect(() => {
         checkAuth();
     }, []);
 
-    // Then, redirect if not authenticated (after auth check completes)
+    // Then, redirect if not authenticated (only after auth check completes)
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (authChecked && !isAuthenticated) {
             navigate("/login", { replace: true });
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, authChecked, navigate]);
 
   useEffect(() => {
 

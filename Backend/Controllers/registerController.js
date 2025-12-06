@@ -37,12 +37,15 @@ async function registerController(req,res){
         const token = setUser(user);
         
         // Cookie settings for cross-origin (Vercel frontend → Render backend)
+        // httpOnly: false allows js-cookie library to read it on frontend
+        // For production: secure must be true, sameSite must be "none" for cross-origin
         const cookieOptions = {
-            httpOnly: false, // Set to false as per your current config
-            secure: true,   // Required for HTTPS and sameSite: "none"
-            sameSite: "none", // Required for cross-origin cookies
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+            httpOnly: false, // Allow JavaScript access (needed for js-cookie library)
+            secure: process.env.NODE_ENV === 'production', // true in production (HTTPS), false in dev (HTTP)
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-origin in prod, 'lax' for same-origin in dev
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds (better than expires)
             path: "/",      // Available for all paths
+            // Don't set domain - let browser handle it automatically
         };
 
         res.status(201).cookie("authToken", token, cookieOptions).send({

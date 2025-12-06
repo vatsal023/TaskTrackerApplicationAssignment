@@ -6,15 +6,26 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false); // Track if auth check is complete
 
-  //on mount,read user info from localStorage for persistence
+  // On mount, read user info from localStorage and cookies for persistence
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const token = Cookies.get("authToken");
+    
     if (token && storedUser) {
-      setIsAuthenticated(true);
-      setUser(JSON.parse(storedUser));
+      try {
+        const userData = JSON.parse(storedUser);
+        setIsAuthenticated(true);
+        setUser(userData);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+        // Clear invalid data
+        localStorage.removeItem("user");
+        Cookies.remove("authToken");
+      }
     }
+    setAuthChecked(true); // Mark auth check as complete
   }, []);
 
   const setAuthenticated = (value, userData = null) => {
@@ -26,26 +37,35 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       localStorage.removeItem("user");
     }
+    setAuthChecked(true); // Mark as checked after setting auth state
   };
 
   const checkAuth = () => {
     const token = Cookies.get("authToken");
     const storedUser = localStorage.getItem("user");
+    
     if (token && storedUser) {
-      setAuthenticated(true, JSON.parse(storedUser));
+      try {
+        const userData = JSON.parse(storedUser);
+        setAuthenticated(true, userData);
+      } catch (error) {
+        console.error("Error parsing user data in checkAuth:", error);
+        setAuthenticated(false, null);
+      }
     } else {
       setAuthenticated(false, null);
     }
+    setAuthChecked(true);
   };
 
   const logout = () => {
-    Cookies.remove("authToken");
+    Cookies.remove("authToken", { path: "/" }); // Remove from all paths
     localStorage.removeItem("user");
     setAuthenticated(false, null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setAuthenticated, checkAuth, logout, user }}>
+    <AuthContext.Provider value={{ isAuthenticated, setAuthenticated, checkAuth, logout, user, authChecked }}>
       {children}
     </AuthContext.Provider>
   );

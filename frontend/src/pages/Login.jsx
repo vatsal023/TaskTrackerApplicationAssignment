@@ -14,13 +14,19 @@ const Login = () => {
     setData({ ...data, [e.target.name]: e.target.value });
   };
   const navigate = useNavigate();
-  const { isAuthenticated, setAuthenticated } = useAuth();
+  const { isAuthenticated, setAuthenticated, checkAuth } = useAuth();
 
+  // Check auth on mount (in case user already logged in)
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate("/dashboard", { replace: true });
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -10,19 +10,19 @@ const DashboardStats = () =>{
 
   const [stats, setStats] = useState(null);
    const navigate = useNavigate();
-       const { isAuthenticated, checkAuth } = useAuth();
+       const { isAuthenticated, checkAuth, authChecked } = useAuth();
     
     // First, check authentication status on mount
     useEffect(() => {
         checkAuth();
     }, []);
 
-    // Then, redirect if not authenticated (after auth check completes)
+    // Then, redirect if not authenticated (only after auth check completes)
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (authChecked && !isAuthenticated) {
             navigate("/login", { replace: true });
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, authChecked, navigate]);
   
   //fetching stats data
   useEffect(() => {

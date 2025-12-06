@@ -10,19 +10,19 @@ import { useEffect } from "react";
 const CreateTask = () => {
 //   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
-     const { isAuthenticated, checkAuth } = useAuth();
+     const { isAuthenticated, checkAuth, authChecked } = useAuth();
   
     // First, check authentication status on mount
     useEffect(() => {
         checkAuth();
     }, []);
 
-    // Then, redirect if not authenticated (after auth check completes)
+    // Then, redirect if not authenticated (only after auth check completes)
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (authChecked && !isAuthenticated) {
             navigate("/login", { replace: true });
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, authChecked, navigate]);
   
   //submitting new task data
   const handleSubmit = async (data) => {
