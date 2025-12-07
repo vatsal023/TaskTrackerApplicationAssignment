@@ -54,7 +54,7 @@ PORT=4000
 Start the Backend Server:
 npm start
 
-###3🌐 Frontend Setup (/frontend)
+### 3🌐 Frontend Setup (/frontend)
 Install Dependencies:
 
 cd frontend
