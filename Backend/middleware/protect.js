@@ -35,7 +35,7 @@ function protect(req, res, next) {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    req.user = userData; // ⭐ THIS LINE IS THE MOST IMPORTANT
+    req.user = userData; 
     next();
   });
 }

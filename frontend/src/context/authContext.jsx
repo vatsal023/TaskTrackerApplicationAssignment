@@ -6,7 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false); // Track if auth check is complete
+  const [authChecked, setAuthChecked] = useState(false); 
 
   // On mount, read user info from localStorage and cookies for persistence
   useEffect(() => {
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
         Cookies.remove("authToken");
       }
     }
-    setAuthChecked(true); // Mark auth check as complete
+    setAuthChecked(true); 
   }, []);
 
   const setAuthenticated = (value, userData = null) => {
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       localStorage.removeItem("user");
     }
-    setAuthChecked(true); // Mark as checked after setting auth state
+    setAuthChecked(true); 
   };
 
   const checkAuth = () => {
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    Cookies.remove("authToken", { path: "/" }); // Remove from all paths
+    Cookies.remove("authToken", { path: "/" }); 
     localStorage.removeItem("user");
     setAuthenticated(false, null);
   };
