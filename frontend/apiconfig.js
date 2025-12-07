@@ -8,6 +8,7 @@ let baseUrl;
 if(import.meta.env.VITE_API_URL){
     // Use environment variable if set (best practice)
     baseUrl = import.meta.env.VITE_API_URL;
+    console.log("Using VITE_API_URL:", baseUrl);
 }
 else if(import.meta.env.MODE === 'production' || import.meta.env.PROD){
     // Production build - use your Render backend URL
@@ -15,6 +16,7 @@ else if(import.meta.env.MODE === 'production' || import.meta.env.PROD){
 }
 else{
     // Development mode
+    console.log("Using localhost for API");
     baseUrl = "http://localhost:4000";
 }
 
