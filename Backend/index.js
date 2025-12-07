@@ -49,6 +49,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
         "http://localhost:4000",
         "http://localhost:3000",
         "https://task-tracker-application-assignment.vercel.app",
+        "https://task-tracker-application-assignment-six.vercel.app",
         "https://tasktrackerapplicationassignment-frontend.onrender.com",
     ];
 app.use(cors({
