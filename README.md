@@ -36,7 +36,7 @@ A full-stack productivity application that helps users create, manage, filter, a
 ## 📦 Setup Instructions
 
 ### 1️ Clone the Repository
-```bash
+
 git clone https://github.com/vatsal023/TaskTrackerApplicationAssignment.git
 cd TaskTrackerApplicationAssignment
 
