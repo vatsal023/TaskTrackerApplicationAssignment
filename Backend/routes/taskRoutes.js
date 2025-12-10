@@ -5,7 +5,7 @@ const {
  getTasks, createTask, getTask, updateTask, deleteTask,getTaskStats
 } = require('../Controllers/taskController');
 
-// router.use(protect);
+router.use(protect);
 
 router.get('/stats',getTaskStats);
 router.get('/', getTasks);
